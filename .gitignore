@@ -8,7 +8,6 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
-dist
 dist-ssr
 *.local
 
@@ -25,6 +24,9 @@ dist-ssr
 
 # GAS（SPREADSHEET_IDなど機密情報を含む）
 gas/
+
+# Claude Code仕様書
+CLAUDE.md
 
 # スクリーンショット
 修正用mage/
