@@ -1,53 +1,14 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { fetchSubscriptions } from '../utils/api.js'
-
-const data = ref({ fixed: [], variable: { total: 0, count: 0 } })
-const loading = ref(true)
+import { computed } from 'vue'
+import { useSubscriptions } from '../utils/useSubscriptions.js'
 
 const now = new Date()
 const month = now.getMonth() + 1
 
-onMounted(async () => {
-  try {
-    data.value = await fetchSubscriptions()
-  } catch {
-    data.value = { fixed: [], variable: { total: 0, count: 0 } }
-  } finally {
-    loading.value = false
-  }
-})
-
-const fixedItems = computed(() => data.value.fixed || [])
-const variable = computed(() => data.value.variable || { total: 0, count: 0 })
-
-// クレカ払い固定費（未請求 / 請求済み）
-const creditUnpaid = computed(() =>
-  fixedItems.value.filter((i) => i.payment === 'クレカ' && !i.paid)
-)
-const creditPaid = computed(() =>
-  fixedItems.value.filter((i) => i.payment === 'クレカ' && i.paid)
-)
-// 口座引落固定費
-const bankFixed = computed(() =>
-  fixedItems.value.filter((i) => i.payment === '口座引落')
-)
-
-// 小計（未請求のみ。請求済みはvariable.totalに含まれるため除外）
-const creditFixedTotal = computed(() =>
-  creditUnpaid.value.reduce((s, i) => s + Number(i.amount || 0), 0)
-)
-const bankFixedTotal = computed(() =>
-  bankFixed.value.reduce((s, i) => s + Number(i.amount || 0), 0)
-)
-
-// 合計見込み = クレカ未請求固定費 + 変動費(クレカ実績) + 口座引落
-const grandTotal = computed(() =>
-  creditFixedTotal.value + variable.value.total + bankFixedTotal.value
-)
+const { loading, variable, creditUnpaid, creditPaid, bankFixed, creditFixedTotal, bankFixedTotal, grandTotal } = useSubscriptions()
 
 const hasData = computed(() =>
-  fixedItems.value.length > 0 || variable.value.count > 0
+  (creditUnpaid.value.length + creditPaid.value.length + bankFixed.value.length) > 0 || variable.value.count > 0
 )
 </script>
 

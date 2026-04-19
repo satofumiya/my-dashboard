@@ -1,9 +1,9 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { fetchCreditData, fetchSubscriptions } from '../utils/api.js'
+import { fetchCreditData } from '../utils/api.js'
+import { useSubscriptions } from '../utils/useSubscriptions.js'
 
 const items = ref([])
-const subData = ref({ fixed: [], variable: { total: 0, count: 0 } })
 const loading = ref(true)
 
 const now = new Date()
@@ -12,32 +12,18 @@ const month = now.getMonth() + 1
 
 onMounted(async () => {
   try {
-    const [credit, subs] = await Promise.all([
-      fetchCreditData(year, month),
-      fetchSubscriptions(),
-    ])
-    items.value = credit
-    subData.value = subs
+    items.value = await fetchCreditData(year, month)
   } catch {
     items.value = []
-    subData.value = { fixed: [], variable: { total: 0, count: 0 } }
   } finally {
     loading.value = false
   }
 })
 
+const { grandTotal: paymentForecast } = useSubscriptions()
+
 const totalAmount = computed(() =>
   items.value.reduce((sum, item) => sum + Number(item.amount || 0), 0)
-)
-
-const fixedTotal = computed(() =>
-  (subData.value.fixed || [])
-    .filter((i) => !i.paid)
-    .reduce((s, i) => s + Number(i.amount || 0), 0)
-)
-
-const paymentForecast = computed(() =>
-  fixedTotal.value + (subData.value.variable?.total || 0)
 )
 </script>
 
