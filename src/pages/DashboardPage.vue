@@ -2,6 +2,7 @@
 import { useRouter } from 'vue-router'
 import { inject } from 'vue'
 import ScheduleCard from '../components/ScheduleCard.vue'
+import RoutineCard from '../components/RoutineCard.vue'
 import TaskCard from '../components/TaskCard.vue'
 import CreditSummaryCard from '../components/CreditSummaryCard.vue'
 import BudgetCard from '../components/BudgetCard.vue'
@@ -21,11 +22,17 @@ const openSettings = inject('openSettings')
   <div class="dashboard-grid">
     <div class="col-left">
       <ScheduleCard />
+      <RoutineCard />
       <TaskCard />
     </div>
     <div class="col-right">
       <CreditSummaryCard />
       <BudgetCard />
+      <div class="card">
+        <button class="btn btn-primary" style="width: 100%;" @click="router.push('/fridge')">
+          冷蔵庫を見る →
+        </button>
+      </div>
       <div class="card">
         <button class="btn btn-primary" style="width: 100%;" @click="router.push('/credit')">
           履歴詳細を見る →

@@ -8,7 +8,7 @@ const error = ref('')
 
 onMounted(async () => {
   try {
-    events.value = await fetchCalendar(7)
+    events.value = await fetchCalendar(1)
   } catch (e) {
     error.value = e.message
   } finally {

@@ -82,6 +82,18 @@ export function fetchTasks() {
   return fetchJsonp({ action: 'tasks' })
 }
 
+export function fetchRoutines() {
+  return fetchJsonp({ action: 'routines' })
+}
+
+export function fetchFridge() {
+  return fetchJsonp({ action: 'fridge' })
+}
+
+export function fetchRecipes() {
+  return fetchJsonp({ action: 'recipes' })
+}
+
 // ─── POST endpoints ───
 
 export function addTask(text) {
@@ -90,4 +102,16 @@ export function addTask(text) {
 
 export function updateTask(id, updates) {
   return postGas({ action: 'updateTask', id, ...updates })
+}
+
+export function toggleRoutine(routineId, done) {
+  return postGas({ action: 'toggleRoutine', routineId, done })
+}
+
+export function addFridgeItem(name, quantity, storage) {
+  return postGas({ action: 'addFridge', name, quantity, storage })
+}
+
+export function updateFridgeItem(id, updates) {
+  return postGas({ action: 'updateFridge', id, ...updates })
 }

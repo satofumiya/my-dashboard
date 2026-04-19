@@ -21,24 +21,27 @@ onMounted(async () => {
 const fixedItems = computed(() => data.value.fixed || [])
 const variable = computed(() => data.value.variable || { total: 0, count: 0 })
 
-// クレカ払い固定費
-const creditFixed = computed(() =>
-  fixedItems.value.filter((i) => i.payment === 'クレカ')
+// クレカ払い固定費（未請求 / 請求済み）
+const creditUnpaid = computed(() =>
+  fixedItems.value.filter((i) => i.payment === 'クレカ' && !i.paid)
+)
+const creditPaid = computed(() =>
+  fixedItems.value.filter((i) => i.payment === 'クレカ' && i.paid)
 )
 // 口座引落固定費
 const bankFixed = computed(() =>
   fixedItems.value.filter((i) => i.payment === '口座引落')
 )
 
-// 小計
+// 小計（未請求のみ。請求済みはvariable.totalに含まれるため除外）
 const creditFixedTotal = computed(() =>
-  creditFixed.value.reduce((s, i) => s + Number(i.amount || 0), 0)
+  creditUnpaid.value.reduce((s, i) => s + Number(i.amount || 0), 0)
 )
 const bankFixedTotal = computed(() =>
   bankFixed.value.reduce((s, i) => s + Number(i.amount || 0), 0)
 )
 
-// 合計見込み = クレカ固定費 + 変動費(クレカ実績) + 口座引落
+// 合計見込み = クレカ未請求固定費 + 変動費(クレカ実績) + 口座引落
 const grandTotal = computed(() =>
   creditFixedTotal.value + variable.value.total + bankFixedTotal.value
 )
@@ -68,15 +71,26 @@ const hasData = computed(() =>
           </span>
         </div>
 
-        <div class="sub-label">固定費</div>
-        <div v-for="(item, idx) in creditFixed" :key="'cf' + idx" class="sub-item">
+        <div class="sub-label">固定費（未請求）</div>
+        <div v-for="(item, idx) in creditUnpaid" :key="'cu' + idx" class="sub-item">
           <div class="sub-name-wrap">
             <span class="sub-name">{{ item.name }}</span>
             <span v-if="item.freq === '年1'" class="badge yearly">年1</span>
           </div>
           <span class="sub-amount">¥{{ Number(item.amount || 0).toLocaleString('ja-JP') }}</span>
         </div>
-        <div v-if="!creditFixed.length" class="sub-empty">—</div>
+        <div v-if="!creditUnpaid.length" class="sub-empty">—</div>
+
+        <template v-if="creditPaid.length">
+          <div class="sub-label">固定費（請求済）</div>
+          <div v-for="(item, idx) in creditPaid" :key="'cp' + idx" class="sub-item paid-item">
+            <div class="sub-name-wrap">
+              <span class="sub-name paid-name">{{ item.name }}</span>
+              <span v-if="item.freq === '年1'" class="badge yearly">年1</span>
+            </div>
+            <span class="sub-amount paid-amount">¥{{ Number(item.amount || 0).toLocaleString('ja-JP') }} ✓</span>
+          </div>
+        </template>
 
         <div class="sub-label">変動費</div>
         <div class="sub-item">
@@ -210,5 +224,17 @@ const hasData = computed(() =>
 .badge.yearly {
   background: rgba(52, 152, 219, 0.2);
   color: #3498db;
+}
+
+.paid-item {
+  opacity: 0.5;
+}
+
+.paid-name {
+  text-decoration: line-through;
+}
+
+.paid-amount {
+  color: var(--text-secondary);
 }
 </style>
