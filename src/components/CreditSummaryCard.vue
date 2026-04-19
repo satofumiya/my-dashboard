@@ -31,7 +31,9 @@ const totalAmount = computed(() =>
 )
 
 const fixedTotal = computed(() =>
-  (subData.value.fixed || []).reduce((s, i) => s + Number(i.amount || 0), 0)
+  (subData.value.fixed || [])
+    .filter((i) => !i.paid)
+    .reduce((s, i) => s + Number(i.amount || 0), 0)
 )
 
 const paymentForecast = computed(() =>
