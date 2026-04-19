@@ -20,25 +20,21 @@ const openSettings = inject('openSettings')
   </div>
 
   <div class="dashboard-grid">
-    <div class="col-left">
-      <ScheduleCard />
-      <RoutineCard />
-      <TaskCard />
+    <div class="item item-credit"><CreditSummaryCard /></div>
+    <div class="item item-history card">
+      <button class="btn btn-primary" style="width: 100%;" @click="router.push('/credit')">
+        履歴詳細を見る →
+      </button>
     </div>
-    <div class="col-right">
-      <CreditSummaryCard />
-      <BudgetCard />
-      <div class="card">
-        <button class="btn btn-primary" style="width: 100%;" @click="router.push('/fridge')">
-          冷蔵庫を見る →
-        </button>
-      </div>
-      <div class="card">
-        <button class="btn btn-primary" style="width: 100%;" @click="router.push('/credit')">
-          履歴詳細を見る →
-        </button>
-      </div>
+    <div class="item item-schedule"><ScheduleCard /></div>
+    <div class="item item-fridge card">
+      <button class="btn btn-primary" style="width: 100%;" @click="router.push('/fridge')">
+        冷蔵庫を見る →
+      </button>
     </div>
+    <div class="item item-budget"><BudgetCard /></div>
+    <div class="item item-routine"><RoutineCard /></div>
+    <div class="item item-task"><TaskCard /></div>
   </div>
 </template>
 
@@ -61,21 +57,22 @@ const openSettings = inject('openSettings')
   align-items: start;
 }
 
+/* デスクトップ: 左列・右列に配置 */
+.item-schedule, .item-routine, .item-task { grid-column: 1; }
+.item-credit, .item-history, .item-fridge, .item-budget { grid-column: 2; }
+
+/* タブレット: 1列で指定順に並べる */
 @media (max-width: 768px) {
   .dashboard-grid {
     grid-template-columns: 1fr;
   }
-}
-
-.col-left,
-.col-right {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.col-left > :deep(.card),
-.col-right > :deep(.card) {
-  margin-bottom: 0;
+  .item { grid-column: 1 !important; }
+  .item-credit  { order: 1; }
+  .item-history { order: 2; }
+  .item-schedule { order: 3; }
+  .item-fridge  { order: 4; }
+  .item-routine { order: 5; }
+  .item-task    { order: 6; }
+  .item-budget  { order: 7; }
 }
 </style>
